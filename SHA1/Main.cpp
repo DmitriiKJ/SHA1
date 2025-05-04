@@ -2,7 +2,7 @@
 #include <vector>
 using namespace std;
 
-unsigned int circularLeftShift(unsigned int value, int shift)
+unsigned int circular_left_shift(unsigned int value, int shift)
 {
 	return (value << shift) | (value >> (32 - shift));
 }
@@ -24,7 +24,7 @@ string uint_to_hex(unsigned int value)
 	return res;
 }
 
-string SHA_1(string message)
+string SHA_1(vector<char> message)
 {
 	unsigned int h0 = 0x67452301;
 	unsigned int h1 = 0xEFCDAB89;
@@ -32,28 +32,28 @@ string SHA_1(string message)
 	unsigned int h3 = 0x10325476;
 	unsigned int h4 = 0xC3D2E1F0;
 
-	unsigned long long lengthBeforePadding = message.length() * 8;
-	message += (char)0x80;
-	while (message.length() % 64 != 56)
+	unsigned long long length_before_padding = message.size() * 8;
+	message.push_back((char)0x80);
+	while (message.size() % 64 != 56)
 	{
-		message += (char)0;
+		message.push_back((char)0);
 	}
-	long length = message.length() * 8;
+	long length = message.size() * 8;
 
 	for (int i = 7; i >= 0; i--)
 	{
-		message += (char)((lengthBeforePadding >> (8 * i) & 0xFF));
+		message.push_back((char)((length_before_padding >> (8 * i) & 0xFF)));
 	}
 
-	for (int i = 0; i < ceil(message.length() / (512.0 / 8.0)); i++)
+	for (int i = 0; i < ceil(message.size() / (512.0 / 8.0)); i++)
 	{
-		string tmp = message.substr(i * (512 / 8), (512 / 8));
+		vector<char> tmp = vector<char>(message.begin() + i * (512 / 8), message.begin() + (i + 1) * (512 / 8));
 		vector<unsigned int> M;
 		for (int j = 0; j <= 15; j++)
 		{
 			unsigned int value = 0;
 			for (int k = 0; k < 4; k++) {
-				if (j * 4 + k < tmp.length())
+				if (j * 4 + k < tmp.size())
 				{
 					value = (value << 8) | (unsigned char)tmp[j * 4 + k];
 				}
@@ -63,7 +63,7 @@ string SHA_1(string message)
 		vector<unsigned int> W = M;
 		for (int j = 16; j <= 79; j++)
 		{
-			W.push_back(circularLeftShift(W[j - 3] ^ W[j - 8] ^ W[j - 14] ^ W[j - 16], 1));
+			W.push_back(circular_left_shift(W[j - 3] ^ W[j - 8] ^ W[j - 14] ^ W[j - 16], 1));
 		}
 
 		auto a = h0;
@@ -98,10 +98,10 @@ string SHA_1(string message)
 				k = 0xCA62C1D6;
 			}
 
-			unsigned int temp = circularLeftShift(a, 5) + f + e + k + W[j];
+			unsigned int temp = circular_left_shift(a, 5) + f + e + k + W[j];
 			e = d;
 			d = c;
-			c = circularLeftShift(b, 30);
+			c = circular_left_shift(b, 30);
 			b = a;
 			a = temp;
 		}
@@ -120,10 +120,10 @@ int main()
 {
 	string message = "Very loooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooong message, to check if long messages are fine with this alghoritm";
 
-	cout << SHA_1(message) << endl;
+	cout << SHA_1(vector<char>(message.begin(), message.end())) << endl;
 
 	message = "MessageMySha1";
-	cout << SHA_1(message) << endl;
+	cout << SHA_1(vector<char>(message.begin(), message.end())) << endl;
 
 	return 0;
 }
