@@ -141,6 +141,40 @@ TEST(SHA1Test, TestVariousMessages) {
 
 int main(int argc, char** argv)
 {
-	::testing::InitGoogleTest(&argc, argv);
-	return RUN_ALL_TESTS();
+	int way;
+	bool finish = false;
+	while (!finish)
+	{
+		do {
+			cout << "(1 - get hash from message, 2 - test, 3 - exit): ";
+			cin >> way;
+			cin.ignore();
+		} while (way != 1 && way != 2 && way != 3);
+
+		switch (way)
+		{
+			case 1:
+			{
+				string input;
+				cout << "Enter message: ";
+				getline(cin, input);
+				string result = SHA_1(vector<char>(input.begin(), input.end()));
+				cout << "Hash: " << result << endl;
+				break;
+			}
+			case 2:
+			{
+				::testing::InitGoogleTest(&argc, argv);
+				return RUN_ALL_TESTS();
+			}
+			case 3:
+			{
+				cout << "Exit" << endl;
+				finish = true;
+				break;
+			}
+			default:
+				break;
+		}
+	}
 }
