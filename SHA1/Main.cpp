@@ -1,5 +1,7 @@
+#define _SILENCE_TR1_NAMESPACE_DEPRECATION_WARNING
 #include <iostream>
 #include <vector>
+#include <gtest/gtest.h>
 using namespace std;
 
 unsigned int circular_left_shift(unsigned int value, int shift)
@@ -33,6 +35,7 @@ string SHA_1(vector<char> message)
 	unsigned int h4 = 0xC3D2E1F0;
 
 	unsigned long long length_before_padding = message.size() * 8;
+	// Add 1 bit to the end of the message and pad with 0s until the length is 448 mod 512
 	message.push_back((char)0x80);
 	while (message.size() % 64 != 56)
 	{
@@ -40,13 +43,16 @@ string SHA_1(vector<char> message)
 	}
 	long length = message.size() * 8;
 
+	// Add message size in bits to the end of the message
 	for (int i = 7; i >= 0; i--)
 	{
 		message.push_back((char)((length_before_padding >> (8 * i) & 0xFF)));
 	}
 
-	for (int i = 0; i < ceil(message.size() / (512.0 / 8.0)); i++)
+	// Divide the message into 512-bit blocks
+	for (int i = 0; i < message.size() / (512 / 8); i++)
 	{
+		// Get 16 32-bit words from the 512-bit block
 		vector<char> tmp = vector<char>(message.begin() + i * (512 / 8), message.begin() + (i + 1) * (512 / 8));
 		vector<unsigned int> M;
 		for (int j = 0; j <= 15; j++)
@@ -60,6 +66,8 @@ string SHA_1(vector<char> message)
 			}
 			M.push_back(value);
 		}
+
+		// Extend the 16 32-bit words into 80 32-bit words
 		vector<unsigned int> W = M;
 		for (int j = 16; j <= 79; j++)
 		{
@@ -113,17 +121,26 @@ string SHA_1(vector<char> message)
 		h4 = h4 + e;
 	}
 
+	// Append the hash values to the result
 	return uint_to_hex(h0) + uint_to_hex(h1) + uint_to_hex(h2) + uint_to_hex(h3)+ uint_to_hex(h4);
 }
 
-int main()
+TEST(SHA1Test, TestVariousMessages) {
+	string input = "MessageMySha1";
+	string result = SHA_1(vector<char>(input.begin(), input.end()));
+	EXPECT_EQ(result, "B4A451D43137596C92E4D913AD2F5745813B9FD9");
+
+	input = "Very loooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooong message, to check if long messages are fine with this alghoritm";
+	result = SHA_1(vector<char>(input.begin(), input.end()));
+	EXPECT_EQ(result, "38D0836D51210A6C2396474E8F1C7E3EE19A1207");
+
+	input = "Hello, world!";
+	result = SHA_1(vector<char>(input.begin(), input.end()));
+	EXPECT_EQ(result, "943A702D06F34599AEE1F8DA8EF9F7296031D699");
+}
+
+int main(int argc, char** argv)
 {
-	string message = "Very loooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooong message, to check if long messages are fine with this alghoritm";
-
-	cout << SHA_1(vector<char>(message.begin(), message.end())) << endl;
-
-	message = "MessageMySha1";
-	cout << SHA_1(vector<char>(message.begin(), message.end())) << endl;
-
-	return 0;
+	::testing::InitGoogleTest(&argc, argv);
+	return RUN_ALL_TESTS();
 }
