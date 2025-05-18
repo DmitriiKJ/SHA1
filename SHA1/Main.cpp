@@ -146,7 +146,7 @@ int main(int argc, char** argv)
 	while (!finish)
 	{
 		do {
-			cout << "(1 - get hash from message, 2 - test, 3 - exit): ";
+			cout << "Options:\n1 - get hash from message\n2 - start tests\n3 - exit\nChoose option: ";
 			cin >> way;
 			cin.ignore();
 		} while (way != 1 && way != 2 && way != 3);
@@ -159,7 +159,9 @@ int main(int argc, char** argv)
 				cout << "Enter message: ";
 				getline(cin, input);
 				string result = SHA_1(vector<char>(input.begin(), input.end()));
+				cout << "==================================================" << endl;
 				cout << "Hash: " << result << endl;
+				cout << "==================================================" << endl;
 				break;
 			}
 			case 2:
