@@ -13,7 +13,7 @@ string uint_to_hex(unsigned int value)
 {
 	string res = "";
 
-	for (int i = sizeof(int) * 2 - 1; i << sizeof(int) * 2 >= 0; i--) {
+	for (int i = sizeof(int) * 2 - 1; i >= 0; i--) {
 		unsigned int symbol = ((value >> i * 4) & 0xf);
 		if (symbol < 10) {
 			res += char(symbol + 48);
@@ -141,14 +141,15 @@ TEST(SHA1Test, TestVariousMessages) {
 
 int main(int argc, char** argv)
 {
-	int way;
+	int way = 0;
 	bool finish = false;
 	while (!finish)
 	{
 		do {
 			cout << "Options:\n1 - get hash from message\n2 - start tests\n3 - exit\nChoose option: ";
 			cin >> way;
-			cin.ignore();
+			cin.clear();
+			cin.ignore(numeric_limits<streamsize>::max(), '\n');
 		} while (way != 1 && way != 2 && way != 3);
 
 		switch (way)
