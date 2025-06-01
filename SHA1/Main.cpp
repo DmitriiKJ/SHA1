@@ -126,17 +126,13 @@ string SHA_1(vector<char> message)
 }
 
 TEST(SHA1Test, TestVariousMessages) {
-	string input = "MessageMySha1";
+	string input = "abc";
 	string result = SHA_1(vector<char>(input.begin(), input.end()));
-	EXPECT_EQ(result, "B4A451D43137596C92E4D913AD2F5745813B9FD9");
+	EXPECT_EQ(result, "A9993E364706816ABA3E25717850C26C9CD0D89D");
 
-	input = "Very loooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooong message, to check if long messages are fine with this alghoritm";
+	input = "abcdbcdecdefdefgefghfghighijhijkijkljklmklmnlmnomnopnopq";
 	result = SHA_1(vector<char>(input.begin(), input.end()));
-	EXPECT_EQ(result, "38D0836D51210A6C2396474E8F1C7E3EE19A1207");
-
-	input = "Hello, world!";
-	result = SHA_1(vector<char>(input.begin(), input.end()));
-	EXPECT_EQ(result, "943A702D06F34599AEE1F8DA8EF9F7296031D699");
+	EXPECT_EQ(result, "84983E441C3BD26EBAAE4AA1F95129E5E54670F1");
 }
 
 int main(int argc, char** argv)
